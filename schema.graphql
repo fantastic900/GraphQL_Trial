@@ -1,3 +1,4 @@
 type Query  {
-   test: String
+   greeting: String
+   sayHello(name:String!): String
 }

@@ -2,7 +2,7 @@
    "name": "hello-world-server",
    "private": true,
    "scripts": {
-      "start": "nodemon server.js"
+      "start": "nodemon --ignore data/ server.js"
    },
    "dependencies": {
       "apollo-server-express": "^1.4.0",
