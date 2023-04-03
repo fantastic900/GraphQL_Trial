@@ -2,6 +2,7 @@ type Query  {
    greeting: String
    sayHello(name:String!): String
    students: [Student]
+   greetingWithAuth: String
 }
 
 type Student {
