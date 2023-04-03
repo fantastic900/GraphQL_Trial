@@ -17,6 +17,8 @@ async function loadSayHello(name) {
     headers: {'content-type': 'application/json'},
     body: JSON.stringify({query:`{sayHello(name:"${name}")}`})
   })
+  const responseBody = await response.json()
+  return responseBody.data.sayHello
 }
 
 class App extends Component {
@@ -36,7 +38,6 @@ class App extends Component {
      const name = this.state.userName;
      console.log(name)
      loadSayHello(name).then(m => {
-      debugger
       this.setState({sayHelloMessage:m})
     })
   }
