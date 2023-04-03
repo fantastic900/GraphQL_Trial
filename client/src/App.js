@@ -1,5 +1,11 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
+import {ApolloClient, gql, HttpLink, InMemoryCache} from 'apollo-boost'
+
+const endPointUrl = 'http://localhost:9000/graphql'
+const client = new ApolloClient({
+   link: new HttpLink({uri:endPointUrl}),
+   cache: new InMemoryCache()
+})
 
 async function loadGreeting() {
   const response = await fetch('http://localhost:9000/graphql', {
@@ -21,10 +27,28 @@ async function loadSayHello(name) {
   return responseBody.data.sayHello
 }
 
+async function loadStudents() {
+   const query = gql`
+   {
+      students {
+         id
+         firstName
+         lastName
+         college {
+            name
+         }
+      }
+   }
+   `
+   const { data } = await client.query({query})
+   return data.students
+}
+
 class App extends Component {
   constructor(props) {
      super(props);
-     this.state =  {greetingMessage:'',sayHelloMessage:'',userName:''}
+     this.state =  {greetingMessage:'',sayHelloMessage:'',userName:'', students: []}
+     this.studentTemplate = [];
      this.updateName =  this.updateName.bind(this);
      this.showSayHelloMessage =  this.showSayHelloMessage.bind(this);
      this.showGreeting =  this.showGreeting.bind(this);
@@ -40,6 +64,13 @@ class App extends Component {
      loadSayHello(name).then(m => {
       this.setState({sayHelloMessage:m})
     })
+  }
+
+  async showStudents() {
+   const studentData = await loadStudents();
+   this.setState({
+      students: studentData
+   })
   }
   
   updateName(event) {
@@ -72,6 +103,42 @@ class App extends Component {
                  <h1>{this.state.sayHelloMessage}</h1>
               </div>
            </section>
+           <div>
+               <input type = "button"  value = "loadStudents" onClick = {this.showStudents.bind(this)}/>
+               <div>
+                  <br/>
+                  <hr/>
+                  <table border = "3">
+                     <thead>
+                        <tr>
+                           <td>First Name</td>
+                           <td>Last Name</td>
+                           <td>college Name</td>
+                        </tr>
+                     </thead>
+                     
+                     <tbody>
+                        {
+                           this.state.students.map(s => {
+                              return (
+                                 <tr key = {s.id}>
+                                    <td>
+                                       {s.firstName}
+                                    </td>
+                                    <td>
+                                       {s.lastName}
+                                    </td>
+                                    <td>
+                                       {s.college.name}
+                                    </td>
+                                 </tr>
+                              )
+                           })
+                        }
+                     </tbody>
+                  </table>
+               </div>
+            </div>
         </div>
      );
   }
